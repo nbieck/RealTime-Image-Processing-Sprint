@@ -13,10 +13,11 @@ int main(int argc, char** argv)
 
 	if (args.positional().size() < 2)
 	{
-		std::cout << "Usage: " << argv[1] << " inputfile outputfile [-equi_to_cube | -cube_to_equi]" << std::endl;
+		std::cout << "Usage: " << argv[0] << " inputfile outputfile [-equi_to_cube | -cube_to_equi]" << std::endl;
 		std::cout << "Valid output formats: png, jpg, bmp" << std::endl;
 		std::cout << "Default format: png" << std::endl;
 		std::cout << "Default conversion: equirectangular to cubemap" << std::endl;
+		return 0;
 	}
 
 	auto input_file_name = args.positional()[0];
