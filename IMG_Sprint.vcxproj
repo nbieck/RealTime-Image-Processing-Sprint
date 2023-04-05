@@ -14,12 +14,13 @@
     <None Include=".gitignore" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\stb_image.h" />
-    <ClInclude Include="include\stb_image_write.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\stb_image_impl.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\thirdparty\flags.h" />
+    <ClInclude Include="include\thirdparty\stb_image.h" />
+    <ClInclude Include="include\thirdparty\stb_image_write.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5EDC77B9-4701-448A-9157-6D9B63770CCA}</ProjectGuid>
