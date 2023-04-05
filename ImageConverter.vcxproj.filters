@@ -18,6 +18,9 @@
     <ClCompile Include="src\main.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\Image.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\thirdparty\flags.h">
@@ -29,5 +32,22 @@
     <ClInclude Include="include\thirdparty\stb_image_write.h">
       <Filter>include\thirdparty</Filter>
     </ClInclude>
+    <ClInclude Include="include\GpuUtils.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Image.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Conversion.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".gitignore" />
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="src\Conversion.cu">
+      <Filter>src</Filter>
+    </CudaCompile>
   </ItemGroup>
 </Project>
