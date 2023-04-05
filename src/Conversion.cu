@@ -27,6 +27,15 @@ __device__ float3 cartesianToSpherical(float3 cartesian)
 	return make_float3(theta, phi, r);
 }
 
+__device__ float3 sphericalToCartesian(float3 spherical)
+{
+	float z = cos(spherical.y) * spherical.z;
+	float x = cos(spherical.x) * sin(spherical.y) * spherical.z;
+	float y = sin(spherical.x) * sin(spherical.y) * spherical.z;
+
+	return make_float3(x, y, z);
+}
+
 __device__ float3 cubeCoordFromXY(int x, int y, int squareDim)
 {
 	float3 cartCoord = make_float3(1,0,0);
@@ -126,6 +135,14 @@ __global__ void equiToCube(const uchar3* src, uchar3* dst, int out_width, int ou
 
 		dst[idx2D(x, y, out_width)] = src[idx2D((int)(theta_norm * in_width), (int)(phi_norm * in_height), in_width)];
 	}
+}
+
+__global__ void cubeToEqui(const uchar3* src, uchar3* dst, int out_width, int out_height, int in_width, int in_height)
+{
+	const int x = blockDim.x * blockIdx.x + threadIdx.x;
+	const int y = blockDim.y * blockIdx.y + threadIdx.y;
+
+	const int squareDim = in_height / 2;
 }
 
 int divUp(int a, int b)
