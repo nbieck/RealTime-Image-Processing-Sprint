@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{a1bcb003-b1f1-4c80-908d-f5db19c6c80c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{9d4bae0a-45de-4514-adfd-07b9db088b6d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\thirdparty">
+      <UniqueIdentifier>{506672e4-306c-4583-923c-0b26908c116b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\thirdparty\flags.h">
+      <Filter>include\thirdparty</Filter>
+    </ClInclude>
+    <ClInclude Include="include\thirdparty\stb_image.h">
+      <Filter>include\thirdparty</Filter>
+    </ClInclude>
+    <ClInclude Include="include\thirdparty\stb_image_write.h">
+      <Filter>include\thirdparty</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GpuUtils.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Image.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Image.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\stb_image_impl.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

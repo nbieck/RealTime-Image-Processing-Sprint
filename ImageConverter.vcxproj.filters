@@ -7,37 +7,13 @@
     <Filter Include="src">
       <UniqueIdentifier>{20db1992-3f6e-4c1b-a508-9feca3b95ecb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\thirdparty">
-      <UniqueIdentifier>{33af8890-83d9-450a-887d-d9981e5f8a84}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\stb_image_impl.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="src\main.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\Image.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\thirdparty\flags.h">
-      <Filter>include\thirdparty</Filter>
-    </ClInclude>
-    <ClInclude Include="include\thirdparty\stb_image.h">
-      <Filter>include\thirdparty</Filter>
-    </ClInclude>
-    <ClInclude Include="include\thirdparty\stb_image_write.h">
-      <Filter>include\thirdparty</Filter>
-    </ClInclude>
-    <ClInclude Include="include\GpuUtils.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Image.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="include\Conversion.h">
       <Filter>include</Filter>
     </ClInclude>
