@@ -23,13 +23,17 @@ int main(int argc, char** argv)
 	auto input_file_name = args.positional()[0];
 	auto output_file_name = args.positional()[1];
 	
-	bool equiToCube = args.get("equi_to_cube", true);
-	bool cubeToEqui = args.get("cube_to_equi", true);
+	std::optional<bool> equiToCubeOpt = args.get<bool>("equi_to_cube");
+	std::optional<bool> cubeToEquiOpt = args.get<bool>("cube_to_equi");
 
-	if (equiToCube == cubeToEqui)
+	bool equiToCube = true;
+	if (equiToCubeOpt.has_value())
 	{
 		equiToCube = true;
-		cubeToEqui = false;
+	}
+	else if (cubeToEquiOpt.has_value())
+	{
+		equiToCube = false;
 	}
 
 	std::cout << "Converting " <<
