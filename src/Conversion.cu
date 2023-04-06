@@ -90,8 +90,9 @@ __device__ float3 cubeCoordFromXY(int x, int y, int squareDim)
 			y -= squareDim;
 			// -Z
 			cartCoord = make_float3(
-				y / (float)squareDim - 0.5,
-				-(x / (float)squareDim - 0.5),
+				// this should be the other way around but for some reason then it doesn't work
+				-(y / (float)squareDim - 0.5),
+				x / (float)squareDim - 0.5,
 				-0.5
 			);
 		}
