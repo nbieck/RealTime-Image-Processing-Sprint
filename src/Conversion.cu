@@ -367,7 +367,8 @@ __global__ void cubeToEqui(const uchar3* src, uchar3* dst, int out_width, int ou
 
 		float2 texCoord = cartesianToTexCoord(cartesian);
 
-		dst[idx2D(x, y, out_width)] = src[idx2D((int)(texCoord.x * in_width), (int)(texCoord.y * in_height), in_width)];
+		dst[idx2D(x, y, out_width)] = make_uchar3(texCoord.x * 255, texCoord.y * 255, 0);
+		//dst[idx2D(x, y, out_width)] = src[idx2D((int)(texCoord.x * in_width), (int)(texCoord.y * in_height), in_width)];
 	}
 }
 

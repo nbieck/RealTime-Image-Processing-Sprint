@@ -1,8 +1,6 @@
 #include "thirdparty/flags.h"
-#include "thirdparty/stb_image_write.h"
 
 #include <iostream>
-#include <functional>
 
 #include "Image.h"
 #include "Conversion.h"
