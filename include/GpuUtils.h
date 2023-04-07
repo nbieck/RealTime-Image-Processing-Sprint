@@ -39,6 +39,10 @@ class GpuBuffer
 
 public:
 
+	GpuBuffer()
+		: gpu_data_(nullptr)
+	{}
+
 	GpuBuffer(int elemCount)
 		: elem_count_(elemCount)
 	{
@@ -62,6 +66,8 @@ public:
 
 	GpuBuffer& operator=(GpuBuffer&& other)
 	{
+		cudaFree(gpu_data_);
+
 		elem_count_ = other.elem_count_;
 		gpu_data_ = other.gpu_data_;
 		other.gpu_data_ = nullptr;

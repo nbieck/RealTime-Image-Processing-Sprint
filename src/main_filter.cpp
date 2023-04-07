@@ -11,10 +11,11 @@ int main(int argc, char** argv)
 
 	if (args.positional().size() < 2)
 	{
-		std::cout << "Usage: " << argv[0] << " input output [-rows R] [-cols C] [-gauss sigma] [-radial sigma [-center_x X] [-center_y Y]] [-pixel size]" << std::endl;
+		std::cout << "Usage: " << argv[0] << " input output [-rows R] [-cols C] [-gauss sigma] [-radial sigma [-center_x X] [-center_y Y]] [-pixel size] [-mask filename]" << std::endl;
 		std::cout << "Supported output formats: png, jpg, bmp" << std::endl;
 		std::cout << "Default rows and columns: 1" << std::endl;
 		std::cout << "Rows and columns will cause the image to be evenly split and each subdivision will be processed separately" << std::endl;
+		std::cout << "if -mask is specified, the filter will only be applied where the mask is white" << std::endl;
 		std::cout << "-gauss sigma will cause a gaussian blur with a standard deviation of sigma to be applied." << std::endl;
 		std::cout << "-radial sigma applies a radial blur with the given standard deviation" << std::endl;
 		std::cout << "    By default it is centered in the middle of each subdivision, -center_x and -center_y can be used to change this (coordinates are normalized with (0,0) in the top left)" << std::endl;
@@ -33,13 +34,28 @@ int main(int argc, char** argv)
 	std::optional<float> gaussian = args.get<float>("gauss");
 	std::optional<float> radial = args.get<float>("radial");
 	std::optional<int> pixel = args.get<int>("pixel");
+	std::optional<std::string> mask = args.get<std::string>("mask");
+	std::optional<Image> mask_img;
+	if (mask)
+	{
+		mask_img = std::optional<Image>(mask.value().c_str());
+	}
 
 	Image img(input.data());
+
+	if (mask)
+	{
+		if (mask_img.value().height() != img.height() || mask_img.value().width() != img.width())
+		{
+			std::cerr << "Mask image dimensions must match main image." << std::endl;
+			return 0;
+		}
+	}
 
 	if (gaussian)
 	{
 		std::cout << "Blurring image " << input << " with standard deviation " << gaussian.value() << " and outputting to " << output << std::endl;
-		img = invokeGaussianBlur(std::move(img), gaussian.value(), rows, cols);
+		img = invokeGaussianBlur(std::move(img), gaussian.value(), rows, cols, (mask_img) ? &mask_img.value() : nullptr);
 	}
 	else if (radial)
 	{
@@ -47,13 +63,13 @@ int main(int argc, char** argv)
 
 		std::cout << "Radial blur on image " << input << " writing to " << output << std::endl;
 		std::cout << "Centered on (" << center.x << ", " << center.y << ") with standard deviation of " << radial.value() << " pixels" << std::endl;
-		img = invokeRadialBlur(std::move(img), radial.value(), center, rows, cols);
+		img = invokeRadialBlur(std::move(img), radial.value(), center, rows, cols, (mask_img) ? &mask_img.value() : nullptr);
 	}
 	else if (pixel)
 	{
 		std::cout << "Pixelating image" << input << " writing to " << output << " with tile size " << pixel.value() << std::endl;
 
-		img = invokePixelate(std::move(img), pixel.value(), rows, cols);
+		img = invokePixelate(std::move(img), pixel.value(), rows, cols, mask_img ? &mask_img.value() : nullptr);
 	}
 
 	img.save(output.data());
