@@ -13,4 +13,17 @@
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\Filters.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="src\Filters.cu">
+      <Filter>src</Filter>
+    </CudaCompile>
+    <CudaCompile Include="src\GpuUtils.cu">
+      <Filter>src</Filter>
+    </CudaCompile>
+  </ItemGroup>
 </Project>

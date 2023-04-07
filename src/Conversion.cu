@@ -2,29 +2,11 @@
 
 #include "GpuUtils.h"
 
-// workarounds for incorrect highlighting
-#include <device_launch_parameters.h>
-#ifdef __INTELLISENSE__
-	#define KERNEL_LAUNCH(GRID, BLOCK)
-#else
-	#define KERNEL_LAUNCH(GRID, BLOCK) <<<GRID, BLOCK>>>
-#endif
-
 #include "math_constants.h"
 
 __device__ int idx2D(int x, int y, int width)
 {
 	return y * width + x;
-}
-
-__device__ float2 operator+(float2 a, float2 b)
-{
-	return make_float2(a.x + b.x, a.y + b.y);
-}
-
-__device__ float3 operator/(float3 a, float b)
-{
-	return make_float3(a.x / b, a.y / b, a.z / b);
 }
 
 __device__ float3 cartesianToSpherical(float3 cartesian)
@@ -122,36 +104,6 @@ __device__ float3 cubeCoordFromXY(int x, int y, int squareDim)
 	}
 
 	return cartCoord;
-}
-
-__device__ int argmax(float3 v)
-{
-	if (v.x > v.y)
-	{
-		if (v.x > v.z)
-		{
-			return 0;
-		}
-		return 2;
-	}
-	else
-	{
-		if (v.y > v.z)
-		{
-			return 1;
-		}
-		return 2;
-	}
-}
-
-__device__ float3 abs(float3 v)
-{
-	return make_float3(abs(v.x), abs(v.y), abs(v.z));
-}
-
-__device__ float max(float3 v)
-{
-	return max(v.x, max(v.y, v.z));
 }
 
 __device__ float lookup(float3 v, int idx)
@@ -367,14 +319,8 @@ __global__ void cubeToEqui(const uchar3* src, uchar3* dst, int out_width, int ou
 
 		float2 texCoord = cartesianToTexCoord(cartesian);
 
-		dst[idx2D(x, y, out_width)] = make_uchar3(texCoord.x * 255, texCoord.y * 255, 0);
-		//dst[idx2D(x, y, out_width)] = src[idx2D((int)(texCoord.x * in_width), (int)(texCoord.y * in_height), in_width)];
+		dst[idx2D(x, y, out_width)] = src[idx2D((int)(texCoord.x * in_width), (int)(texCoord.y * in_height), in_width)];
 	}
-}
-
-int divUp(int a, int b)
-{
-	return (a + b - 1) / b;
 }
 
 Image convertEquirectangularToCubemap(Image&& input)

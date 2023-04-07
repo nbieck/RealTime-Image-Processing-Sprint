@@ -23,6 +23,7 @@
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="src\Conversion.cu" />
+    <CudaCompile Include="src\GpuUtils.cu" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="SharedUtils.vcxproj">
@@ -90,7 +91,9 @@
       <Include>$(SolutionDir)include;%(Include)</Include>
       <CompileOut>$(IntDirFullPath)\%(Filename)%(Extension).obj</CompileOut>
       <KeepDir>$(IntDir)</KeepDir>
+      <GenerateRelocatableDeviceCode>true</GenerateRelocatableDeviceCode>
     </CudaCompile>
+    <CudaLink />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -115,7 +118,9 @@
       <Include>$(SolutionDir)include;%(Include)</Include>
       <CompileOut>$(IntDirFullPath)\%(Filename)%(Extension).obj</CompileOut>
       <KeepDir>$(IntDir)</KeepDir>
+      <GenerateRelocatableDeviceCode>true</GenerateRelocatableDeviceCode>
     </CudaCompile>
+    <CudaLink />
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -25,5 +25,8 @@
     <CudaCompile Include="src\Conversion.cu">
       <Filter>src</Filter>
     </CudaCompile>
+    <CudaCompile Include="src\GpuUtils.cu">
+      <Filter>src</Filter>
+    </CudaCompile>
   </ItemGroup>
 </Project>
