@@ -38,12 +38,12 @@ public:
 		return data_[row * total_width_ + col];
 	}
 
-	__device__ __host__ int width()
+	__device__ __host__ int width() const
 	{
 		return width_;
 	}
 
-	__device__ __host__ int height()
+	__device__ __host__ int height() const
 	{
 		return height_;
 	}

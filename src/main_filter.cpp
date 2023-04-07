@@ -16,6 +16,7 @@ int main(int argc, char** argv)
 		std::cout << "Default rows and columns: 1" << std::endl;
 		std::cout << "Rows and columns will cause the image to be evenly split and each subdivision will be processed separately" << std::endl;
 		std::cout << "-gauss sigma will cause a gaussian blur with a standard deviation of sigma to be applied." << std::endl;
+		std::cout << "Only one of the specified filters will be applied." << std::endl;
 
 		return 0;
 	}
@@ -32,6 +33,7 @@ int main(int argc, char** argv)
 
 	if (sigma)
 	{
+		std::cout << "Blurring image " << input << " with standard deviation " << sigma.value() << " and outputting to " << output << std::endl;
 		img = gaussian_blur(std::move(img), sigma.value(), rows, cols);
 	}
 

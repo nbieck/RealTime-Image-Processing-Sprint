@@ -1,13 +1,9 @@
 #include "Conversion.h"
 
 #include "GpuUtils.h"
+#include "OffsetPointer.h"
 
 #include "math_constants.h"
-
-__device__ int idx2D(int x, int y, int width)
-{
-	return y * width + x;
-}
 
 __device__ float3 cartesianToSpherical(float3 cartesian)
 {
@@ -283,14 +279,14 @@ __device__ float2 cartesianToTexCoord(float3 cartesian)
 	return base_coord + offset;
 }
 
-__global__ void equiToCube(const uchar3* src, uchar3* dst, int out_width, int out_height, int in_width, int in_height)
+__global__ void equiToCube(const OffsetPointer<uchar3> src, OffsetPointer<uchar3> dst)
 {
 	const int x = blockDim.x * blockIdx.x + threadIdx.x;
 	const int y = blockDim.y * blockIdx.y + threadIdx.y;
 
-	const int squareDim = out_height / 2;
+	const int squareDim = dst.height() / 2;
 
-	if (x < out_width && y < out_height)
+	if (x < dst.width() && y < dst.height())
 	{
 		float3 cubeCoord = cubeCoordFromXY(x, y, squareDim);
 
@@ -303,62 +299,92 @@ __global__ void equiToCube(const uchar3* src, uchar3* dst, int out_width, int ou
 		}
 		float phi_norm = spherical.y / CUDART_PI;
 
-		dst[idx2D(x, y, out_width)] = src[idx2D((int)(theta_norm * in_width), (int)(phi_norm * in_height), in_width)];
+		dst(x, y) = src((int)(theta_norm * src.width()), (int)(phi_norm * src.height()));
 	}
 }
 
-__global__ void cubeToEqui(const uchar3* src, uchar3* dst, int out_width, int out_height, int in_width, int in_height)
+__global__ void cubeToEqui(const OffsetPointer<uchar3> src, OffsetPointer<uchar3> dst)
 {
 	const int x = blockDim.x * blockIdx.x + threadIdx.x;
 	const int y = blockDim.y * blockIdx.y + threadIdx.y;
 
-	if (x < out_width && y < out_height)
+	if (x < dst.width() && y < dst.height())
 	{
-		float3 sphericalCoord = make_float3(((float)x / out_width) * CUDART_PI * 2, ((float)y / out_height) * CUDART_PI, 2);
+		float3 sphericalCoord = make_float3(((float)x / dst.width()) * CUDART_PI * 2, ((float)y / dst.height()) * CUDART_PI, 2);
 		float3 cartesian = sphericalToCartesian(sphericalCoord);
 
 		float2 texCoord = cartesianToTexCoord(cartesian);
 
-		dst[idx2D(x, y, out_width)] = src[idx2D((int)(texCoord.x * in_width), (int)(texCoord.y * in_height), in_width)];
+		dst(x, y) = src((int)(texCoord.x * src.width()), (int)(texCoord.y * src.height()));
 	}
 }
 
-Image convertEquirectangularToCubemap(Image&& input)
+Image convertEquirectangularToCubemap(Image&& input, int rows, int cols)
 {
-	int squareDims = input.width() / 4;
+	int squareDims = (input.width() / cols) / 4;
 
-	Image result(squareDims * 3, squareDims * 2);
+	Image result(squareDims * 3 * cols, squareDims * 2 * rows);
 
 	GpuBuffer<uchar3> d_input(input.width() * input.height());
 	GpuBuffer<uchar3> d_output(result.width() * result.height());
 
 	d_input.upload(input.data());
-	
-	dim3 block(16, 16);
-	dim3 grid(divUp(result.width(), block.x), divUp(result.height(), block.y));
 
-	equiToCube KERNEL_LAUNCH(grid, block) (d_input.ptr(), d_output.ptr(), result.width(), result.height(), input.width(), input.height());
+	int cell_width_in = input.width() / cols;
+	int cell_height_in = input.height() / rows;
+
+	int cell_width_out = result.width() / cols;
+	int cell_height_out = result.height() / rows;
+	
+	for (int r = 0; r < rows; ++r)
+	{
+		for (int c = 0; c < cols; ++c)
+		{
+			OffsetPointer<uchar3> src_ptr(d_input.ptr(), input.width(), cell_width_in, cell_height_in, r * cell_height_in, c * cell_width_in);
+			OffsetPointer<uchar3> dst_ptr(d_output.ptr(), result.width(), cell_width_out, cell_height_out, r * cell_height_out, c * cell_width_out);
+
+			dim3 block(16, 16);
+			dim3 grid(divUp(dst_ptr.width(), block.x), divUp(dst_ptr.height(), block.y));
+
+			equiToCube KERNEL_LAUNCH(grid, block) (src_ptr, dst_ptr);
+		}
+	}
 
 	d_output.download(result.data());
 
 	return result;
 }
 
-Image convertCubemapToEquirectangular(Image&& input)
+Image convertCubemapToEquirectangular(Image&& input, int rows, int cols)
 {
-	int squareDims = input.width() / 3;
+	int squareDims = (input.width() / cols) / 3;
 
-	Image result(squareDims * 4, squareDims * 2);
+	Image result(squareDims * 4 * cols, squareDims * 2 * rows);
 
 	GpuBuffer<uchar3> d_input(input.width() * input.height());
 	GpuBuffer<uchar3> d_output(result.width() * result.height());
 
 	d_input.upload(input.data());
 	
-	dim3 block(16, 16);
-	dim3 grid(divUp(result.width(), block.x), divUp(result.height(), block.y));
+	int cell_width_in = input.width() / cols;
+	int cell_height_in = input.height() / rows;
 
-	cubeToEqui KERNEL_LAUNCH(grid, block) (d_input.ptr(), d_output.ptr(), result.width(), result.height(), input.width(), input.height());
+	int cell_width_out = result.width() / cols;
+	int cell_height_out = result.height() / rows;
+	
+	for (int r = 0; r < rows; ++r)
+	{
+		for (int c = 0; c < cols; ++c)
+		{
+			OffsetPointer<uchar3> src_ptr(d_input.ptr(), input.width(), cell_width_in, cell_height_in, r * cell_height_in, c * cell_width_in);
+			OffsetPointer<uchar3> dst_ptr(d_output.ptr(), result.width(), cell_width_out, cell_height_out, r * cell_height_out, c * cell_width_out);
+
+			dim3 block(16, 16);
+			dim3 grid(divUp(dst_ptr.width(), block.x), divUp(dst_ptr.height(), block.y));
+
+			cubeToEqui KERNEL_LAUNCH(grid, block) (src_ptr, dst_ptr);
+		}
+	}
 
 	d_output.download(result.data());
 

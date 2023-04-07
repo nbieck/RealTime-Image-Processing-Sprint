@@ -34,6 +34,6 @@ Which when put on the cube will unfold as such (right-handed coordinates):
 
 *************************************************/
 
-Image convertEquirectangularToCubemap(Image&& input);
+Image convertEquirectangularToCubemap(Image&& input, int rows, int cols);
 
-Image convertCubemapToEquirectangular(Image&& input);
+Image convertCubemapToEquirectangular(Image&& input, int rows, int cols);

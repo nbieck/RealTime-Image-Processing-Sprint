@@ -11,10 +11,12 @@ int main(int argc, char** argv)
 
 	if (args.positional().size() < 2)
 	{
-		std::cout << "Usage: " << argv[0] << " inputfile outputfile [-equi_to_cube | -cube_to_equi]" << std::endl;
+		std::cout << "Usage: " << argv[0] << " inputfile outputfile [-equi_to_cube | -cube_to_equi] [-rows R] [-cols C]" << std::endl;
 		std::cout << "Valid output formats: png, jpg, bmp" << std::endl;
 		std::cout << "Default format: png" << std::endl;
 		std::cout << "Default conversion: equirectangular to cubemap" << std::endl;
+		std::cout << "Default rows and columns: 1" << std::endl;
+		std::cout << "Rows and columns will cause the image to be evenly split and each subdivision will be processed separately" << std::endl;
 		return 0;
 	}
 
@@ -34,6 +36,9 @@ int main(int argc, char** argv)
 		equiToCube = false;
 	}
 
+	int rows = args.get("rows", 1);
+	int cols = args.get("cols", 1);
+
 	std::cout << "Converting " <<
 		(equiToCube ? "from equirectangular to cubemap" : "from cubemap to equirectangular") << std::endl;
 	std::cout << "Input: " << input_file_name << std::endl;
@@ -43,11 +48,11 @@ int main(int argc, char** argv)
 
 	if (equiToCube)
 	{
-		image = convertEquirectangularToCubemap(std::move(image));
+		image = convertEquirectangularToCubemap(std::move(image), rows, cols);
 	}
 	else
 	{
-		image = convertCubemapToEquirectangular(std::move(image));
+		image = convertCubemapToEquirectangular(std::move(image), rows, cols);
 	}
 
 	image.save(std::string(output_file_name));
